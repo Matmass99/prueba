@@ -1,0 +1,201 @@
+import barrileteCosmico.*
+
+describe "Barrilete Cósmico" {
+
+	var garlicsSea
+	var silversSea
+	var lastToninas
+	var goodAirs
+	var phari
+	var avion
+	var auto
+	var barco
+	var tren
+	var micro
+	var viajeNuevo1
+	var viajeNuevo2
+	var turbina1
+	var turbina2
+	var turbina3
+	var turbina4
+	var micro2
+	var tren2
+
+	fixture{
+		garlicsSea 	= new Localidad(nombre= "Garlic's Sea",sugerenciasDeViaje = ["Caña de Pescar", "Piloto"] ,precioPorVolar = 2500,kilometroDeUbicacion=0)
+		silversSea 	= new Localidad(nombre= "Silver's Sea",sugerenciasDeViaje = ["Protector Solar", "Equipo de Buceo"] ,precioPorVolar = 1350,kilometroDeUbicacion=100)
+		lastToninas = new Localidad(nombre= "Last Toninas",sugerenciasDeViaje = ["Vacuna Gripal", "Vacuna B", "Necronomicon"] ,precioPorVolar = 3500,kilometroDeUbicacion=200)
+		goodAirs 	= new Localidad(nombre= "Good Airs",sugerenciasDeViaje = ["Cerveza", "ProtectorSolar"] ,precioPorVolar = 1500,kilometroDeUbicacion=300)
+		
+		garlicsSea 	= new Playas(nombre= "Garlic's Sea",sugerenciasDeViaje = ["Caña de Pescar", "Piloto"] ,precioPorVolar = 2500,kilometroDeUbicacion=0)
+		silversSea 	= new CiudadesHistoricas(nombre= "Silver's Sea",sugerenciasDeViaje = ["Protector Solar", "Equipo de Buceo","Asistencia al viajero"] ,precioPorVolar = 2350,kilometroDeUbicacion=100,museos=["Ciencias","Informatica","Historia"])
+		lastToninas = new Playas(nombre= "Last Toninas",sugerenciasDeViaje = ["Vacuna Gripal", "Vacuna B", "Necronomicon"] ,precioPorVolar = 3500,kilometroDeUbicacion=200)
+		goodAirs 	= new Montanias(nombre= "Good Airs",sugerenciasDeViaje = ["Cerveza", "ProtectorSolar","Vacuna"] ,precioPorVolar = 1500,kilometroDeUbicacion=300,altura = 5001)
+	
+		turbina1 = new Turbinas(nivelDeImpulso=100)
+		turbina2 = new Turbinas(nivelDeImpulso=200)
+		turbina3 = new Turbinas(nivelDeImpulso=300)
+		turbina4 = new Turbinas(nivelDeImpulso=400)
+		
+		avion.agregarTurbina(turbina1)
+		avion.agregarTurbina(turbina2)
+		avion.agregarTurbina(turbina3)
+		avion.agregarTurbina(turbina4)
+		
+		avion = new Aviones(duracion = 1, valorPorKilometro = 50, turbinas = [])
+		auto = new MedioDeTransporte(duracion = 10, valorPorKilometro = 10)
+		barco = new Barcos(duracion = 7, valorPorKilometro = 30,probabilidadDeChocarConIceberg=1000)
+		tren = new Trenes(duracion = 9, valorPorKilometro = 20)
+		micro = new Micros(duracion = 8, valorPorKilometro = 40)
+		tren2 = new MedioDeTransporte(duracion = 9, valorPorKilometro = 20)
+		micro2 = new MedioDeTransporte(duracion = 8, valorPorKilometro = 40)
+		
+		
+		barrileteCosmico.agregarDestino(garlicsSea)
+		barrileteCosmico.agregarDestino(silversSea)
+		barrileteCosmico.agregarDestino(lastToninas)
+		barrileteCosmico.agregarDestino(goodAirs)
+		
+		barrileteCosmico.agregarMedioDeTransporte(auto)
+		barrileteCosmico.agregarMedioDeTransporte(tren)
+		barrileteCosmico.agregarMedioDeTransporte(micro)
+		
+		
+		viajeNuevo1 = new Viajes(localidadDeOrigen = garlicsSea, localidadDeDestino = lastToninas, medioDeTransporte = auto)
+		viajeNuevo2 = new Viajes(localidadDeOrigen = garlicsSea, localidadDeDestino = goodAirs, medioDeTransporte = micro2)
+		
+		phari = new Usuario(userName="Phari", historial=[viajeNuevo1,viajeNuevo2],cuenta = 17000, siguiendo= [], localidadDeOrigen = garlicsSea, perfil = empresario)
+	}
+
+	test "Los destinos más importantes de BC son Garlic's Sea y Last Toninas" {	
+		assert.equals([garlicsSea, lastToninas], barrileteCosmico.destinosMasImportantes())
+	}
+	
+	test "Descuento del 25% en Last Toninas - Precio"{
+		lastToninas.aplicarDescuento(25)
+		assert.equals(2625, lastToninas.precioPorVolar())
+	}
+	
+	test "Descuento del 25% en Last Toninas - Certificado"{
+		lastToninas.aplicarDescuento(25)
+		assert.that(lastToninas.sugerenciasDeViaje().contains("Certificado de descuento"))
+	}
+	
+	test "Silver's Sea no es un destino peligroso"{
+		assert.notThat(silversSea.esPeligroso(silversSea))
+	}
+	
+	test "Descuento del 15% a Garlic's Sea"{
+		barrileteCosmico.aplicarDescuentoATodosLosDestinos(15)
+		assert.equals(2125,garlicsSea.precioPorVolar())
+	}
+	
+	test "Descuento del 15% a Silver's Sea"{
+		barrileteCosmico.aplicarDescuentoATodosLosDestinos(15)
+		assert.equals(1147.5,silversSea.precioPorVolar())
+	}
+	
+	test "Descuento del 15% a Last Toninas"{
+		barrileteCosmico.aplicarDescuentoATodosLosDestinos(15)
+		assert.equals(2975,lastToninas.precioPorVolar())		
+	}
+	
+	test "Descuento del 15% a Good Airs"{
+		barrileteCosmico.aplicarDescuentoATodosLosDestinos(15)
+		assert.equals(1275,goodAirs.precioPorVolar())
+	}
+
+	test "Destino más peligrosos hasta el momento es Last Toninas"{
+		assert.equals([lastToninas],barrileteCosmico.lugaresPeligrosos())
+	}
+	
+	test "BC es empresa extrema"{
+		assert.that(barrileteCosmico.esEmpresaExtrema())	
+	}
+	
+	test "Los destinos de BC son Last Toninas, Garlic's Sea, Good Airs y Silver's Sea"{
+		assert.equals(["Garlic's Sea", "Silver's Sea", "Last Toninas", "Good Airs"], barrileteCosmico.cartaDeDestinos())
+	}
+	
+	test "PHari tiene 500 km"{
+		assert.equals(500, phari.kilometros())
+	}
+	
+	test "PHari puede viajar a viajeNuevo1 y dicho viaje se agrega a su historial"{
+		phari.viajar(viajeNuevo1)
+		assert.that(phari.historial().contains(viajeNuevo1))
+	}
+
+	test "Phari puede viajar a viajeNuevo2 y tiene $500"{
+		phari.viajar(viajeNuevo2)
+		assert.equals(500, phari.cuenta())
+	}
+
+	/* TESTS SEGUNDA PARTE */
+
+	test "Barrilete Cósmico tiene diferentes medios de transporte"{
+		assert.equals([auto, tren, micro], barrileteCosmico.mediosDeTransporte())
+	}
+	
+	test "Last Toninas se encuentra en el km 200"{
+		assert.equals(200, lastToninas.kilometroDeUbicacion())
+	}
+	
+	test "La distancia entre Last Toninas y Good Airs es de 100km"{
+		assert.equals(100, lastToninas.kilometrosHasta(goodAirs))
+	}
+	
+	test "La distancia entre Last Toninas y Good Airs es la misma que entre Good Airs y Last Toninas"{
+		assert.equals(goodAirs.kilometrosHasta(lastToninas), lastToninas.kilometrosHasta(goodAirs))
+	}
+	
+	test "El precio del viajeNuevo1 es $5500"{
+		assert.equals(5500, viajeNuevo1.precioDelViaje())
+	}
+	
+	test "El precio del viajeNuevo2 es $16500"{
+		assert.equals(16500, viajeNuevo2.precioDelViaje())
+	}
+	
+	test "La localidad de origen de Phari luego de hacer el viajeNuevo1 es Last Toninas"{
+		phari.viajar(viajeNuevo1)
+		assert.equals(lastToninas, phari.localidadDeOrigen())
+	}
+	
+	test "Luego de viajar a nuevoViaje1, a Phari no le alcanza para viajar a viajeNuevo2"{
+		phari.viajar(viajeNuevo1)
+		assert.throwsException({ phari.viajar(viajeNuevo2) })
+	}
+	/*TEST TERCERA PARTE */
+	test "Las playas no son destinos peligroso"{
+		assert.notThat(lastToninas.esPeligroso(lastToninas))
+	}
+	test "Las montanias son destinos peligroso"{
+		assert.that(goodAirs.esPeligroso(goodAirs))
+	}
+	test "Las ciudades historicas son destinos peligroso"{
+		assert.that(silversSea.esPeligroso(silversSea))
+	}
+	test "Las playas son destacadas"{
+		assert.that(lastToninas.destinoDestacado(lastToninas))
+	}
+	test "Las montanias son destacadas"{
+		assert.that(goodAirs.destinoDestacado(goodAirs))
+	}
+	test "Las ciudades historicas son destacadas"{
+		assert.that(silversSea.destinoDestacado(silversSea))
+	}
+	test "El valor por kilometro del avion es"{
+		assert.equals(1,avion.valorPorKilometro())
+	}
+	test "El valor por kilometro del micro es"{
+		assert.equals(40,micro.valorPorKilometro())
+	}
+	test "El valor por kilometro del tren es"{
+		assert.equals(20,tren.valorPorKilometro())
+	}
+	test "El valor por kilometro del barco es"{
+		assert.equals(1000000,barco.valorPorKilometro())
+	}
+	
+}
